@@ -1,6 +1,6 @@
 # NIELIT ROPAR SMART LAB – ESP8266 Smart Home System
 
-[![Firmware Version](https://img.shields.io/badge/Firmware-v3.0.0-blue)](https://github.com/yourusername/nielit-smartlab)
+[![Firmware Version](https://img.shields.io/badge/Firmware-v3.0.0-blue)](https://github.com/lovnishverma/nielit-smartlab)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-ESP8266-orange)](https://www.espressif.com/)
 
@@ -700,3 +700,13 @@ Built with:
 - WiFiManager by tzapu
 - ArduinoJson by Benoit Blanchon
 - DHT Sensor Library by Adafruit
+- 
+
+## 📄 Screenshots
+
+<img width="1852" height="2356" alt="nielit-ropar local_" src="https://github.com/user-attachments/assets/51825530-ebf0-4353-b7d1-761c795afb78" />
+
+---
+
+<img width="1852" height="1396" alt="nielit-ropar local_update" src="https://github.com/user-attachments/assets/d6c1765f-f483-4849-b1f7-6f7db36924b5" />
+
