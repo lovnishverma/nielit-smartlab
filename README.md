@@ -710,3 +710,10 @@ Built with:
 
 <img width="1852" height="1396" alt="nielit-ropar local_update" src="https://github.com/user-attachments/assets/d6c1765f-f483-4849-b1f7-6f7db36924b5" />
 
+---
+
+# The hardware used includes a NOCE MCU Blynk board, an ESP8266, one buzzer, two LEDs, some resistors, and connecting wires.
+
+![hw](https://github.com/user-attachments/assets/0bf78c01-fab9-490a-a46f-741837d432d4)
+
+
