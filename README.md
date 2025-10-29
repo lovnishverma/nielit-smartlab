@@ -1,239 +1,639 @@
-# NIELIT ROPAR SMART LAB – ESP8266 Smart Home System
+# NIELIT ROPAR SMART LAB – Complete Documentation
 
-[![Firmware Version](https://img.shields.io/badge/Firmware-v3.0.0-blue)](https://github.com/lovnishverma/nielit-smartlab)
-[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-ESP8266-orange)](https://www.espressif.com/)
+[![Firmware](https://img.shields.io/badge/Firmware-v3.0.0-blue.svg)](https://github.com/lovnishverma/nielit-smartlab)
+[![Platform](https://img.shields.io/badge/Platform-ESP8266-orange.svg)](https://www.espressif.com/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-A production-ready IoT smart home system built for ESP8266, featuring dual relay control, environmental monitoring, and comprehensive web-based management.
+**Production-Ready IoT Smart Home System for ESP8266**
 
 ---
 
-## 🚀 Features
+## 📑 Table of Contents
+
+1. [Overview](#-overview)
+2. [Features](#-features)
+3. [Hardware Requirements](#-hardware-requirements)
+4. [Software Requirements](#-software-requirements)
+5. [Installation Guide](#-installation-guide)
+6. [First-Time Setup](#-first-time-setup)
+7. [Web Interface Guide](#-web-interface-guide)
+8. [OTA Firmware Updates](#-ota-firmware-updates)
+9. [API Documentation](#-api-documentation)
+10. [Physical Controls](#-physical-controls)
+11. [Troubleshooting](#-troubleshooting)
+12. [Advanced Configuration](#-advanced-configuration)
+13. [Security & Best Practices](#-security--best-practices)
+
+---
+
+## 🎯 Overview
+
+NIELIT Smart Lab is a comprehensive IoT system built on ESP8266, designed for educational institutions and home automation. It provides:
+
+- **Dual relay control** with web and physical interfaces
+- **Environmental monitoring** via DHT11 sensor
+- **Wireless firmware updates** (OTA)
+- **Factory reset** with authentication
+- **Real-time system monitoring** and logging
+
+**Key Improvements in v3.0.0:**
+- ✅ Fixed OTA Update page loading bug
+- ✅ Fixed Factory Reset authentication
+- ✅ Enhanced error handling
+- ✅ Improved code documentation
+
+---
+
+## ✨ Features
 
 ### Core Functionality
-- **Dual Relay Control** – Web interface + physical button control
-- **DHT11 Sensor** – Real-time temperature & humidity monitoring
-- **WiFi Manager** – Easy network configuration with captive portal
-- **OTA Updates** – Wireless firmware updates via web interface
-- **Factory Reset** – Complete device reset with authentication
-- **System Logging** – Real-time event monitoring and diagnostics
+
+| Feature | Description |
+|---------|-------------|
+| **Relay Control** | 2 independent relays (web + physical buttons) |
+| **Environmental Sensing** | DHT11 temperature & humidity monitoring |
+| **WiFi Manager** | Captive portal for easy network setup |
+| **OTA Updates** | Upload firmware via web browser |
+| **Factory Reset** | Complete device reset with password |
+| **System Logs** | Real-time event tracking (20 entries) |
 
 ### Advanced Features
-- ⚡ Rate limiting (20 toggles/minute per relay)
-- 💾 EEPROM state persistence across reboots
-- 🔒 HTTP Basic Authentication for admin functions
-- 🌐 mDNS support (http://nielit-ropar.local)
-- 🐕 Watchdog timer protection
-- 📊 Memory health monitoring with auto-recovery
-- 🔊 Audio feedback for all interactions
+
+- ⚡ **Rate Limiting:** 20 toggles/minute per relay
+- 💾 **EEPROM Persistence:** Saves relay states across reboots
+- 🔒 **HTTP Authentication:** Protects admin functions
+- 🌐 **mDNS Support:** Access via `http://nielit-ropar.local`
+- 🐕 **Watchdog Timer:** Auto-recovery from crashes (8s timeout)
+- 📊 **Memory Monitoring:** Auto-restart below 8KB free heap
+- 🔊 **Audio Feedback:** Buzzer confirms all actions
 
 ---
 
-## 📋 Hardware Requirements
+## 🔧 Hardware Requirements
 
-| Component | Specification | Pin |
-|-----------|--------------|-----|
-| **Microcontroller** | ESP8266 (NodeMCU/Wemos D1) | - |
-| **Relay Module** | 2-Channel 5V Relay | D1 (GPIO5), D2 (GPIO4) |
-| **Temperature Sensor** | DHT11 | D5 (GPIO14) |
-| **Status LEDs** | Standard LEDs | D7 (GPIO13), D8 (GPIO15) |
-| **Control Buttons** | Push buttons | RX (GPIO3), TX (GPIO1) |
-| **Buzzer** | 5V Active Buzzer | D3 (GPIO0) |
-| **Power Supply** | 5V 2A | VIN/5V |
+### Components List
 
-### Pin Configuration
+| Component | Specification | Quantity | Pin Connection |
+|-----------|--------------|----------|----------------|
+| **ESP8266 Board** | NodeMCU v3 / Wemos D1 Mini | 1 | - |
+| **Relay Module** | 2-Channel 5V (ACTIVE-HIGH) | 1 | D1, D2 |
+| **Temperature Sensor** | DHT11 | 1 | D5 |
+| **Status LEDs** | 5mm Red/Green | 2 | D7, D8 |
+| **Control Buttons** | Tactile Push Button | 2 | RX, TX |
+| **Buzzer** | 5V Active Buzzer | 1 | D3 |
+| **Resistors** | 220Ω (for LEDs) | 2 | - |
+| **Power Supply** | 5V 2A USB/DC Adapter | 1 | VIN/5V |
+| **Breadboard** | Half-size or full-size | 1 | - |
+| **Jumper Wires** | Male-to-Male/Female | 20+ | - |
+
+### Complete Pin Mapping
+
 ```
-RELAY1  → D1 (GPIO5)   |  LED1    → D7 (GPIO13)
-RELAY2  → D2 (GPIO4)   |  LED2    → D8 (GPIO15)
-BUTTON1 → RX (GPIO3)   |  BUZZER  → D3 (GPIO0)
-BUTTON2 → TX (GPIO1)   |  DHT11   → D5 (GPIO14)
+┌─────────────────────────────────────────────────────────┐
+│              ESP8266 NodeMCU Pin Configuration           │
+├─────────────┬──────────┬──────────┬────────────────────┤
+│ Function    │ Board Pin│ GPIO Pin │ Connection Details │
+├─────────────┼──────────┼──────────┼────────────────────┤
+│ Relay 1     │ D1       │ GPIO5    │ → Relay IN1        │
+│ Relay 2     │ D2       │ GPIO4    │ → Relay IN2        │
+│ LED 1       │ D7       │ GPIO13   │ → 220Ω → LED → GND │
+│ LED 2       │ D8       │ GPIO15   │ → 220Ω → LED → GND │
+│ Button 1    │ RX       │ GPIO3    │ → Button → GND     │
+│ Button 2    │ TX       │ GPIO1    │ → Button → GND     │
+│ Buzzer      │ D3       │ GPIO0    │ → Buzzer+ → GND    │
+│ DHT11 Data  │ D5       │ GPIO14   │ → DHT11 Data Pin   │
+│ DHT11 VCC   │ 3.3V     │ -        │ → DHT11 VCC        │
+│ DHT11 GND   │ GND      │ -        │ → DHT11 GND        │
+│ Power In    │ VIN/5V   │ -        │ ← 5V 2A Supply     │
+│ Ground      │ GND      │ -        │ ← Common Ground    │
+└─────────────┴──────────┴──────────┴────────────────────┘
 ```
+
+### Wiring Diagram
+
+```
+                    ┌──────────────────────┐
+                    │   ESP8266 NodeMCU    │
+                    │                      │
+    5V Power ───────┤ VIN              3V3 ├───── DHT11 VCC
+    Ground ─────────┤ GND              GND ├───── Common GND
+                    │                      │
+    Relay IN1 ──────┤ D1  (GPIO5)       D5 ├───── DHT11 Data
+    Relay IN2 ──────┤ D2  (GPIO4)       D7 ├───[220Ω]─── LED1 ─── GND
+                    │                   D8 ├───[220Ω]─── LED2 ─── GND
+    Button1 ────────┤ RX  (GPIO3)       D3 ├───── Buzzer+ ─── GND
+    Button2 ────────┤ TX  (GPIO1)          │
+                    └──────────────────────┘
+
+    ┌──────────────────────────────────┐
+    │    2-Channel Relay Module        │
+    ├──────────────────────────────────┤
+    │  VCC ←── 5V Power Supply         │
+    │  GND ←── Common Ground           │
+    │  IN1 ←── D1 (GPIO5)              │
+    │  IN2 ←── D2 (GPIO4)              │
+    │                                  │
+    │  Relay 1: COM1 ──┬── NO1        │
+    │                  └── NC1         │
+    │  Relay 2: COM2 ──┬── NO2        │
+    │                  └── NC2         │
+    └──────────────────────────────────┘
+```
+
+**⚠️ IMPORTANT NOTES:**
+- **Relay Logic:** ACTIVE-HIGH (HIGH = ON, LOW = OFF)
+- **Button Logic:** ACTIVE-LOW with internal pullup (press = connect to GND)
+- **DHT11 Power:** Use 3.3V for stability (5V can work but may cause errors)
+- **Common Ground:** All components must share common ground with ESP8266
+- **Power Supply:** 2A minimum to handle relay switching current
 
 ---
 
-## 🔧 Installation
+## 💻 Software Requirements
 
-### 1. Prerequisites
-- **Arduino IDE** 1.8.19+ or **PlatformIO**
-- **ESP8266 Board Package** (3.0.0+)
-- **USB to Serial Driver** (CH340/CP2102 based on your board)
+### Arduino IDE Setup
 
-#### Installing ESP8266 Board Package
+#### 1. Install Arduino IDE
+- **Version Required:** 1.8.19 or newer
+- **Download:** [arduino.cc/en/software](https://www.arduino.cc/en/software)
+
+#### 2. Add ESP8266 Board Support
+
 1. Open Arduino IDE
 2. Go to **File → Preferences**
-3. Add to "Additional Board Manager URLs":
+3. In "Additional Board Manager URLs", add:
    ```
    http://arduino.esp8266.com/stable/package_esp8266com_index.json
    ```
-4. Go to **Tools → Board → Boards Manager**
-5. Search for "esp8266" and install **ESP8266 by ESP8266 Community**
+4. Click **OK**
+5. Go to **Tools → Board → Boards Manager**
+6. Search for `esp8266`
+7. Install **ESP8266 by ESP8266 Community** (version 3.0.0+)
+8. Click **Close**
 
-### 2. Required Libraries
-Install via **Sketch → Include Library → Manage Libraries**:
+#### 3. Install Required Libraries
 
-| Library | Version | Author |
-|---------|---------|--------|
-| WiFiManager | v2.0.16+ | tzapu |
-| ArduinoJson | v6.21+ | Benoit Blanchon |
-| DHT sensor library | v1.4.4+ | Adafruit |
-| Adafruit Unified Sensor | v1.1.9+ | Adafruit |
+Open **Sketch → Include Library → Manage Libraries** and install:
 
-**Pre-installed with ESP8266 package:**
+| Library Name | Version | Author | Purpose |
+|-------------|---------|--------|---------|
+| **WiFiManager** | 2.0.16+ | tzapu | WiFi configuration portal |
+| **ArduinoJson** | 6.21.0+ | Benoit Blanchon | JSON parsing for API |
+| **DHT sensor library** | 1.4.4+ | Adafruit | DHT11 temperature/humidity |
+| **Adafruit Unified Sensor** | 1.1.9+ | Adafruit | Required by DHT library |
+
+**Built-in Libraries (No Installation Needed):**
 - ESP8266WiFi
 - ESP8266WebServer
 - ESP8266mDNS
 - ESP8266HTTPUpdateServer
 - EEPROM
 
-### 3. Upload Initial Firmware
+### Verify Installation
 
-#### Step 1: Connect Hardware
-1. Connect ESP8266 to computer via USB
-2. Wait for drivers to install (check Device Manager on Windows)
-3. Note the COM port (e.g., COM3, COM5)
+Create a test sketch:
+```cpp
+#include <ESP8266WiFi.h>
+#include <WiFiManager.h>
+#include <ArduinoJson.h>
+#include <DHT.h>
 
-#### Step 2: Configure Arduino IDE
-1. Open `NIELIT_SmartHome.ino`
-2. **Tools → Board** → Select **"NodeMCU 1.0 (ESP-12E Module)"**
-3. **Tools → Upload Speed** → **115200**
-4. **Tools → CPU Frequency** → **80 MHz**
-5. **Tools → Flash Size** → **4MB (FS:2MB OTA:~1019KB)**
-6. **Tools → Port** → Select your COM port
-7. **Tools → Erase Flash** → **Only Sketch** (first time use "All Flash Contents")
+void setup() {
+  Serial.begin(115200);
+  Serial.println("Libraries loaded successfully!");
+}
 
-#### Step 3: Upload
-1. Click **Verify (✓)** to compile (ensure no errors)
-2. Click **Upload (→)**
-3. Wait for "Done uploading" message
-4. Open **Tools → Serial Monitor** (115200 baud)
-
-### 4. First-Time Setup (WiFi Configuration)
-
-When the device boots for the first time, it enters **Access Point (AP) Mode**:
-
-#### Connection Details
-```
-📶 WiFi Network Name (SSID): NIELIT-SmartLab
-🔐 Password: nielit2025
+void loop() {}
 ```
 
-#### Setup Steps
-1. **Power ON** the ESP8266
-2. **Listen for audio feedback**:
-   - 3 beeps = Fresh boot
-   - 4 beeps = AP mode activated
-3. **Connect your phone/laptop** to WiFi: `NIELIT-SmartLab`
-4. **Enter password**: `nielit2025`
-5. **Captive portal opens automatically** (if not, go to `http://192.168.4.1`)
-6. **Click "Configure WiFi"**
-7. **Select your home WiFi** from the list
-8. **Enter your WiFi password**
-9. **Click "Save"**
-10. Device will **reboot and connect** to your network (1 beep = success)
+Click **Verify (✓)**. If it compiles without errors, you're ready!
 
-#### Finding Device IP Address
-After successful connection, check Serial Monitor for:
+---
+
+## 📥 Installation Guide
+
+### Step 1: Connect ESP8266
+
+1. **Connect via USB** to your computer
+2. **Wait for drivers** to install (Windows: Check Device Manager)
+3. **Note the COM port** (e.g., COM3, COM5)
+   - Windows: Device Manager → Ports (COM & LPT)
+   - Mac: `/dev/cu.usbserial-*`
+   - Linux: `/dev/ttyUSB*`
+
+### Step 2: Configure Arduino IDE
+
+1. **Open** `NIELIT_SmartHome.ino`
+2. Go to **Tools** and configure:
+
+| Setting | Value |
+|---------|-------|
+| **Board** | NodeMCU 1.0 (ESP-12E Module) |
+| **Upload Speed** | 115200 |
+| **CPU Frequency** | 80 MHz |
+| **Flash Size** | **4MB (FS:2MB OTA:~1019KB)** ⚠️ Critical! |
+| **Port** | Your COM port (e.g., COM3) |
+| **Erase Flash** | Only Sketch (or "All" for first upload) |
+| **Debug Level** | None |
+
+### Step 3: Compile Firmware
+
+1. Click **Verify (✓)** button
+2. Wait for compilation (30-60 seconds)
+3. **Check for errors** in the output window
+4. **Expected output:**
+   ```
+   Sketch uses 357,232 bytes (34%) of program storage space.
+   Global variables use 31,416 bytes (38%) of dynamic memory.
+   ```
+
+### Step 4: Upload Firmware
+
+1. **Ensure ESP8266 is connected** via USB
+2. Click **Upload (→)** button
+3. **Monitor progress** in the output window:
+   ```
+   Uploading...
+   Writing at 0x00000000... (10%)
+   Writing at 0x00004000... (20%)
+   ...
+   Writing at 0x00074000... (100%)
+   Hard resetting via RTS pin...
+   ```
+4. **Success message:** `Done uploading.`
+
+### Step 5: Verify Upload
+
+**⚠️ IMPORTANT:** Serial Monitor is **DISABLED** in this firmware due to use of RX/TX pins for physical buttons!
+
+**Instead, verify upload by:**
+1. **Audio feedback:**
+   - 3 beeps = Fresh boot (no saved state)
+   - 2 beeps = State restored from EEPROM
+2. **LED indicators:**
+   - LEDs should be OFF (or match last saved state)
+3. **WiFi network:**
+   - Look for `NIELIT-SmartLab` WiFi network (AP mode)
+
+**Why No Serial Monitor?**
+- GPIO3 (RX) and GPIO1 (TX) are used for physical buttons
+- Serial communication would interfere with button detection
+- All diagnostics available via web interface (`/logs` page)
+
+---
+
+## 🚀 First-Time Setup
+
+### WiFi Configuration Process
+
+When powered on for the first time, the device enters **Access Point (AP) Mode**:
+
+#### Audio/Visual Indicators
+
+| Beep Pattern | Meaning |
+|--------------|---------|
+| 3 beeps | Fresh boot (no EEPROM data) |
+| 4 beeps | AP mode activated |
+| 1 beep | WiFi connected successfully |
+| 2 beeps | State restored from EEPROM |
+
+#### Step-by-Step WiFi Setup
+
+**Step 1: Power ON Device**
 ```
-✓ WiFi Connected
-✓ IP Address: 192.168.1.100
-✓ mDNS: http://nielit-ropar.local
+▪️ Connect 5V power supply
+▪️ Wait 3-5 seconds for boot
+▪️ Listen for 4 beeps (AP mode active)
 ```
 
-### 5. Generating .BIN File for OTA Updates
+**Step 2: Connect to AP**
+```
+📱 On your phone/laptop:
+   └─ WiFi Settings
+      └─ Select: NIELIT-SmartLab
+         └─ Password: nielit2025
+```
 
-#### Method 1: Arduino IDE (Recommended)
-1. Open your modified `NIELIT_SmartHome.ino`
-2. Go to **Sketch → Export Compiled Binary** (or press `Ctrl+Alt+S`)
-3. Wait for compilation to complete
-4. Find the `.bin` file in the sketch folder:
+**Step 3: Configure WiFi**
+```
+🌐 Captive portal opens automatically
+   (If not, browse to: http://192.168.4.1)
+
+   1. Click "Configure WiFi"
+   2. Select your home WiFi network
+   3. Enter WiFi password
+   4. Click "Save"
+```
+
+**Step 4: Wait for Connection**
+```
+⏳ Device will:
+   1. Save credentials to memory
+   2. Reboot automatically
+   3. Connect to your WiFi
+   4. Beep once (success)
+```
+
+**Step 5: Find Device IP**
+```
+Since Serial Monitor is disabled, use:
+
+Option A: Router Admin Panel
+   └─ DHCP Client List
+      └─ Look for "ESP_XXXXXX" or "NIELIT-SmartLab"
+
+Option B: mDNS (if supported)
+   └─ Browse to: http://nielit-ropar.local
+
+Option C: Network Scanner App
+   └─ Use: Fing (iOS/Android) or Advanced IP Scanner (Windows)
+      └─ Scan for device on port 80
+```
+
+### Troubleshooting First Setup
+
+| Problem | Solution |
+|---------|----------|
+| **Can't see AP network** | • Power cycle device<br>• Check 2.4GHz WiFi enabled<br>• Move closer to device |
+| **Captive portal doesn't open** | • Manually go to `192.168.4.1`<br>• Disable mobile data<br>• Try different browser |
+| **Can't connect to home WiFi** | • Verify password (case-sensitive)<br>• Check router is 2.4GHz<br>• Ensure DHCP is enabled |
+| **No beep after save** | • Wait 30 seconds<br>• Check power supply (2A needed)<br>• Try factory reset |
+
+---
+
+## 🌐 Web Interface Guide
+
+### Accessing Dashboard
+
+**Primary Methods:**
+```
+🔗 http://DEVICE_IP_ADDRESS
+   Example: http://192.168.1.100
+
+🔗 http://nielit-ropar.local (mDNS)
+   Note: May not work on all networks
+```
+
+**Default Credentials:**
+```
+👤 Username: admin
+🔐 Password: rccrcc
+```
+
+### Dashboard Layout
+
+```
+╔════════════════════════════════════════════════════════╗
+║            NIELIT Ropar Smart Lab                      ║
+║         Firmware v3.0.0 • ● Online                     ║
+╠════════════════════════════════════════════════════════╣
+║  [RELAY CONTROL]                                       ║
+║  ┌────────────────────────────────────────────┐       ║
+║  │ Relay 1              [ON]  [Turn OFF]      │       ║
+║  │ Relay 2              [OFF] [Turn ON]       │       ║
+║  └────────────────────────────────────────────┘       ║
+╠════════════════════════════════════════════════════════╣
+║  [ENVIRONMENT SENSORS]                                 ║
+║  ┌─────────────────┬─────────────────┐                ║
+║  │  Temperature    │    Humidity     │                ║
+║  │     28.5°C      │      65.2%      │                ║
+║  └─────────────────┴─────────────────┘                ║
+╠════════════════════════════════════════════════════════╣
+║  [SYSTEM INFO]                                         ║
+║  Uptime:      2h 15m                                   ║
+║  IP Address:  192.168.1.100                            ║
+║  Free Heap:   28.5 KB                                  ║
+║  Local URL:   http://nielit-ropar.local/               ║
+╠════════════════════════════════════════════════════════╣
+║  [FACTORY RESET]                                       ║
+║  [ Factory Reset (Erase Wi-Fi & Settings) ]            ║
+║  ⚠️ Requires password: admin / ******                  ║
+╠════════════════════════════════════════════════════════╣
+║  © NIELIT Ropar 2025 • OTA Update • System Logs       ║
+╚════════════════════════════════════════════════════════╝
+```
+
+### Dashboard Features Explained
+
+#### 1. Relay Control Section
+
+**Relay Status Badge:**
+- 🟢 **ON** (Green) = Relay is active
+- 🔴 **OFF** (Red) = Relay is inactive
+
+**Control Buttons:**
+- **Turn ON** = Activates relay (green button)
+- **Turn OFF** = Deactivates relay (red button)
+
+**Rate Limiting:**
+- Maximum: 20 toggles per minute per relay
+- Counter resets every 60 seconds
+- Exceeded limit shows error message
+
+**Audio Feedback:**
+- Single beep = Toggle successful
+- No beep = Rate limit exceeded
+
+#### 2. Environment Sensors
+
+**Temperature Display:**
+- Range: -40°C to 80°C
+- Updates every 5 seconds
+- Shows `--` if sensor error
+
+**Humidity Display:**
+- Range: 0% to 100%
+- Updates every 5 seconds
+- Shows `--` if sensor error
+
+#### 3. System Information
+
+**Uptime:**
+- Format: `Xd Yh Zm` (days, hours, minutes)
+- Example: `2d 5h 30m`
+- Resets on device reboot
+
+**IP Address:**
+- Shows current local IP
+- Click to copy (depends on browser)
+
+**Free Heap:**
+- Current available RAM
+- Should stay above 8 KB
+- Auto-restart if below 8 KB
+
+**Local URL:**
+- mDNS address (if supported)
+- Alternative to IP address
+
+#### 4. Factory Reset
+
+**Function:**
+- Clears all WiFi credentials
+- Erases EEPROM data
+- Resets to factory defaults
+- Reboots into AP mode
+
+**Process:**
+1. Click "Factory Reset" button
+2. Confirm warning dialog
+3. Enter username: `admin`
+4. Enter password: `rccrcc`
+5. Wait 5-10 seconds for reboot
+
+### System Logs Page
+
+**Access:** `http://DEVICE_IP/logs`
+
+**Features:**
+- Shows last 20 system events
+- Auto-refreshes every 3 seconds
+- Includes timestamps (in seconds since boot)
+- No authentication required
+
+**Example Log Entries:**
+```
+15s: System boot – NIELIT ROPAR v3.0.0
+17s: EEPROM invalid or empty - using defaults
+20s: DHT11 sensor initialized
+25s: WiFi connected: 192.168.1.100
+26s: mDNS started: nielit-ropar.local
+27s: Web server started on port 80
+28s: System ready – All services running
+45s: Relay1 → ON
+50s: Relay2 → ON
+```
+
+---
+
+## 🔄 OTA Firmware Updates
+
+### Preparing for OTA Update
+
+#### Step 1: Generate .BIN File
+
+**Using Arduino IDE:**
+
+1. **Open** your modified `NIELIT_SmartHome.ino`
+2. **Increment version** if you made changes:
+   ```cpp
+   #define FIRMWARE_VERSION "3.0.1"  // Change from 3.0.0
+   ```
+3. **Go to:** Sketch → Export Compiled Binary
+   - Or press `Ctrl+Alt+S` (Windows/Linux)
+   - Or press `Cmd+Alt+S` (Mac)
+4. **Wait** for compilation (output shows "Done")
+5. **Locate .BIN file:**
    - Windows: `Documents\Arduino\NIELIT_SmartHome\`
-   - Look for: `NIELIT_SmartHome.ino.nodemcu.bin`
+   - Mac: `~/Documents/Arduino/NIELIT_SmartHome/`
+   - Linux: `~/Arduino/NIELIT_SmartHome/`
+   - Filename: `NIELIT_SmartHome.ino.nodemcu.bin`
 
-#### Method 2: Manual Export
-1. Click **Verify (✓)** to compile
-2. Look for build output in Arduino IDE (enable verbose output in Preferences)
-3. Find line: `Copying output to...`
-4. Copy the `.bin` file from temp directory to your desired location
-
-#### Method 3: Using arduino-cli (Advanced)
-```bash
-arduino-cli compile --fqbn esp8266:esp8266:nodemcu NIELIT_SmartHome.ino
+**Verify .BIN File:**
+```
+✅ File size: 350-450 KB
+✅ Extension: .bin
+✅ No spaces in filename (if renaming)
 ```
 
-#### Verifying .BIN File
-- **File size**: Should be ~350-450 KB
-- **Filename**: Must end with `.bin`
-- **Version check**: Increment `FIRMWARE_VERSION` in code before compiling
+#### Step 2: Perform OTA Update
 
-### 6. Performing OTA Update
+**Access Update Page:**
+```
+🔗 http://DEVICE_IP/update
+   Example: http://192.168.1.100/update
 
-#### Prerequisites
-- Device must be connected to WiFi
-- `.bin` file ready
-- Admin password known (`rccrcc`)
+🔗 http://nielit-ropar.local/update
+```
 
-#### Update Steps
-1. Open web interface: `http://nielit-ropar.local` or IP address
-2. Click **"OTA Update"** link in footer
-3. Enter password: `rccrcc`
-4. Click **"Choose .bin File"**
-5. Select your compiled `.bin` file
-6. Click **"Update Firmware"**
-7. **Wait for upload** (progress bar shows percentage)
-8. Device will **automatically reboot** with new firmware
-9. **Verify version** on dashboard after reboot
+**Update Process:**
 
-#### OTA Update Troubleshooting
-- ❌ **"Authentication failed"** → Check password is `rccrcc`
-- ❌ **"Upload failed"** → Ensure file is valid `.bin` for ESP8266
-- ❌ **Device unresponsive** → Power cycle and retry
-- ❌ **"Not enough space"** → Use correct Flash Size setting (4MB with OTA)
+```
+┌──────────────────────────────────────────┐
+│        OTA Update – NIELIT ROPAR         │
+│                                          │
+│  Current: v3.0.0                         │
+│                                          │
+│  [Password: ******]                      │
+│  [Choose .bin File]                      │
+│                                          │
+│  ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0%                     │
+│                                          │
+│  [Update Firmware] (disabled)            │
+│                                          │
+│  © NIELIT ROPAR 2025 • Back to Dashboard │
+└──────────────────────────────────────────┘
+```
+
+**Steps:**
+1. **Enter password:** `rccrcc`
+2. **Click "Choose .bin File"**
+3. **Select your .bin file**
+4. **Click "Update Firmware"**
+5. **Monitor progress bar**
+6. **Wait for success message**
+7. **Device reboots automatically** (20-30 seconds)
+8. **Verify new version** on dashboard
+
+**Upload Progress:**
+```
+⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0%   → Starting upload...
+⬛⬛⬛⬜⬜⬜⬜⬜⬜⬜ 25%  → Uploading...
+⬛⬛⬛⬛⬛⬛⬜⬜⬜⬜ 50%  → Halfway there...
+⬛⬛⬛⬛⬛⬛⬛⬛⬛⬜ 75%  → Almost done...
+⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛ 100% → ✅ Success! Rebooting...
+```
+
+### OTA Update Troubleshooting
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| **"Authentication failed"** | Wrong password | Use `rccrcc` exactly |
+| **"Only .bin files allowed"** | Wrong file type | Export compiled binary, not .ino |
+| **"Upload failed"** | Network issue | Move closer to router, retry |
+| **"Not enough space"** | Wrong flash settings | Recompile with 4MB OTA partition |
+| **Page doesn't load** | Browser cache | Hard refresh (Ctrl+F5) |
+| **Device unresponsive** | Bad firmware | Recover via USB upload |
+
+### Recovery from Bad OTA
+
+**If device becomes unresponsive:**
+
+1. **Connect via USB**
+2. **Open Arduino IDE**
+3. **Select correct COM port**
+4. **Upload working firmware** (normal upload method)
+5. **Wait for upload to complete**
+6. **Perform factory reset** (web interface or via code)
+
+**Why OTA might fail:**
+- ❌ Wrong board type selected during compilation
+- ❌ Flash size mismatch (must have OTA partition)
+- ❌ Corrupted .bin file
+- ❌ Power loss during upload
+- ❌ WiFi connection dropped mid-upload
 
 ---
 
-## 🌐 Usage
+## 📡 API Documentation
 
-### Web Interface
-Access via browser:
-- **IP Address**: `http://192.168.x.x` (check Serial Monitor)
-- **mDNS**: `http://nielit-ropar.local`
+### Overview
 
-### Default Credentials
-```
-Username: admin
-Password: rccrcc
-```
+All API endpoints return JSON responses and use RESTful conventions.
 
-### Dashboard Features
-- **Relay Control** – Toggle relays ON/OFF with rate limiting
-- **Live Sensors** – Real-time temperature and humidity display
-- **System Info** – Uptime, IP address, memory usage
-- **OTA Update** – Upload new firmware (.bin files)
-- **System Logs** – View recent events and diagnostics
-- **Factory Reset** – Complete device reset (requires password)
+**Base URL:** `http://DEVICE_IP/api/`
 
-### Physical Controls
-- **Button 1** – Toggle Relay 1
-- **Button 2** – Toggle Relay 2
-- Both buttons are debounced and include audio feedback
+**Authentication:** Required for `/factory-reset` only (HTTP Basic Auth)
 
----
+### Endpoints Reference
 
-## 📡 API Endpoints
+#### GET /api/status
 
-### Status & Control
-```
-GET  /api/status          → System status (JSON)
-GET  /api/logs            → System logs (JSON)
-GET  /api/relay1/on       → Turn Relay 1 ON
-GET  /api/relay1/off      → Turn Relay 1 OFF
-GET  /api/relay2/on       → Turn Relay 2 ON
-GET  /api/relay2/off      → Turn Relay 2 OFF
-GET  /api/reset           → Soft reset (EEPROM only)
-GET  /api/factory-reset   → Full reset (requires auth)
-```
+**Description:** Retrieve current system status
 
-### Example Response (`/api/status`)
+**Authentication:** None
+
+**Response:**
 ```json
 {
   "version": "3.0.0",
@@ -245,6 +645,226 @@ GET  /api/factory-reset   → Full reset (requires auth)
   "ip": "192.168.1.100",
   "heap": 28672
 }
+```
+
+**Response Fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `version` | string | Firmware version |
+| `r1` | boolean | Relay 1 state (true=ON) |
+| `r2` | boolean | Relay 2 state (true=ON) |
+| `temp` | float | Temperature in Celsius |
+| `hum` | float | Relative humidity (%) |
+| `uptime` | integer | Milliseconds since boot |
+| `ip` | string | Device IP address |
+| `heap` | integer | Free heap in bytes |
+
+**Example cURL:**
+```bash
+curl http://192.168.1.100/api/status
+```
+
+---
+
+#### GET /api/logs
+
+**Description:** Retrieve system event logs
+
+**Authentication:** None
+
+**Response:**
+```json
+{
+  "logs": [
+    "15s: System boot – NIELIT ROPAR v3.0.0",
+    "20s: WiFi connected: 192.168.1.100",
+    "45s: Relay1 → ON",
+    "50s: Relay2 → OFF",
+    ""
+  ]
+}
+```
+
+**Response Fields:**
+- `logs`: Array of 20 log entries (oldest first)
+- Empty strings indicate unused buffer slots
+
+**Example cURL:**
+```bash
+curl http://192.168.1.100/api/logs
+```
+
+---
+
+#### GET /api/relay1/on
+
+**Description:** Turn Relay 1 ON
+
+**Authentication:** None
+
+**Response:** 303 redirect to `/` (dashboard)
+
+**Rate Limit:** 20 toggles/minute
+
+**Error Response (429):**
+```
+Rate limit exceeded: Max 20 toggles/min
+```
+
+**Example cURL:**
+```bash
+curl http://192.168.1.100/api/relay1/on
+```
+
+---
+
+#### GET /api/relay1/off
+
+**Description:** Turn Relay 1 OFF
+
+**Authentication:** None
+
+**Response:** 303 redirect to `/` (dashboard)
+
+**Example cURL:**
+```bash
+curl http://192.168.1.100/api/relay1/off
+```
+
+---
+
+#### GET /api/relay2/on
+
+**Description:** Turn Relay 2 ON
+
+**Authentication:** None
+
+**Response:** 303 redirect to `/` (dashboard)
+
+**Example cURL:**
+```bash
+curl http://192.168.1.100/api/relay2/on
+```
+
+---
+
+#### GET /api/relay2/off
+
+**Description:** Turn Relay 2 OFF
+
+**Authentication:** None
+
+**Response:** 303 redirect to `/` (dashboard)
+
+**Example cURL:**
+```bash
+curl http://192.168.1.100/api/relay2/off
+```
+
+---
+
+#### GET /api/reset
+
+**Description:** Soft reset (clears EEPROM only, keeps WiFi)
+
+**Authentication:** None
+
+**Response:**
+```html
+<h2>Resetting device... © NIELIT ROPAR</h2>
+```
+
+**Effect:**
+- Clears EEPROM data
+- Keeps WiFi credentials
+- Reboots device
+
+**Example cURL:**
+```bash
+curl http://192.168.1.100/api/reset
+```
+
+---
+
+#### GET /api/factory-reset
+
+**Description:** Complete factory reset (WiFi + EEPROM)
+
+**Authentication:** HTTP Basic Auth (`admin` / `rccrcc`)
+
+**Response:**
+```json
+{
+  "status": "success",
+  "message": "Factory reset complete. Rebooting into AP mode..."
+}
+```
+
+**Effect:**
+- Clears EEPROM data
+- Erases WiFi credentials
+- Reboots into AP mode
+- Audio: 5 beeps before reboot
+
+**Example cURL:**
+```bash
+curl -u admin:rccrcc http://192.168.1.100/api/factory-reset
+```
+
+**Error Response (401):**
+```
+Authentication required
+```
+
+---
+
+### API Usage Examples
+
+#### Python Example
+
+```python
+import requests
+
+BASE_URL = "http://192.168.1.100/api"
+
+# Get status
+response = requests.get(f"{BASE_URL}/status")
+data = response.json()
+print(f"Temperature: {data['temp']}°C")
+print(f"Relay 1: {'ON' if data['r1'] else 'OFF'}")
+
+# Toggle relay
+requests.get(f"{BASE_URL}/relay1/on")
+
+# Factory reset (requires auth)
+requests.get(
+    f"{BASE_URL}/factory-reset",
+    auth=('admin', 'rccrcc')
+)
+```
+
+#### JavaScript Example
+
+```javascript
+// Get status
+fetch('http://192.168.1.100/api/status')
+  .then(r => r.json())
+  .then(d => {
+    console.log(`Temperature: ${d.temp}°C`);
+    console.log(`Relay 1: ${d.r1 ? 'ON' : 'OFF'}`);
+  });
+
+// Toggle relay
+fetch('http://192.168.1.100/api/relay1/on');
+
+// Factory reset (with auth)
+fetch('http://192.168.1.100/api/factory-reset', {
+  method: 'GET',
+  headers: {
+    'Authorization': 'Basic ' + btoa('admin:rccrcc')
+  }
+});
 ```
 
 ---
@@ -700,7 +1320,7 @@ Built with:
 - WiFiManager by tzapu
 - ArduinoJson by Benoit Blanchon
 - DHT Sensor Library by Adafruit
-- 
+- NOCE MCU Blynk board
 
 ## 📄 Screenshots
 
